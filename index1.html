@@ -1,0 +1,6 @@
+touch index1.html                      # ✅ Create a new file
+echo "<h1>Trigger Jenkins</h1>" > index1.html  # ✅ Add simple HTML content
+
+git add .
+git commit -m "Trigger Jenkins rebuild by adding index1.html"
+git push origin main
