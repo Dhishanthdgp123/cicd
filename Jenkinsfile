@@ -1,11 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Clone Repo') {
-            steps {
-                git 'https://github.com/Dhishanthdgp123/cicd.git'
-            }
-        }
         stage('Copy to Docker Host') {
             steps {
                 sh 'scp -i ~/.ssh/cicd -o StrictHostKeyChecking=no -r * ubuntu@3.108.64.4:/home/ubuntu/app'
