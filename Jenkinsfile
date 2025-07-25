@@ -1,19 +1,29 @@
 pipeline {
     agent any
+
     stages {
-        stage('Copy to Docker Host') {
+        stage('Clone Repo') {
             steps {
-                sh 'scp -i /home/ubuntu/.ssh/cicd -o StrictHostKeyChecking=no -r * ubuntu@3.108.64.4:/home/ubuntu/app'
+                git 'https://github.com/Dhishanthdgp123/cicd.git'
             }
         }
+
         stage('Build Docker Image') {
             steps {
-                sh 'ssh -i /home/ubuntu/.ssh/cicd -o StrictHostKeyChecking=no ubuntu@3.108.64.4 "cd /home/ubuntu/app && docker build -t frontend-app ."'
+                sh 'scp -i ~/.ssh/cicd.pem -o StrictHostKeyChecking=no -r * ubuntu@3.108.64.4:/home/ubuntu/app'
             }
         }
-        stage('Run Docker Container') {
+
+        stage('Deploy Docker Container') {
             steps {
-                sh 'ssh -i /home/ubuntu/.ssh/cicd -o StrictHostKeyChecking=no ubuntu@3.108.64.4 "docker rm -f frontend-app || true && docker run -d -p 80:80 --name frontend-app frontend-app"'
+                sh '''
+                ssh -i ~/.ssh/cicd.pem -o StrictHostKeyChecking=no ubuntu@3.108.64.4 << EOF
+                  cd /home/ubuntu/app
+                  echo -e 'FROM nginx\\nCOPY . /usr/share/nginx/html' > Dockerfile
+                  docker build -t frontend-image .
+                  docker run -d -p 80:80 frontend-image
+                EOF
+                '''
             }
         }
     }
