@@ -1,3 +1,2 @@
-FROM ngink
-
+FROM nginx:alpine
 COPY . /usr/share/nginx/html
